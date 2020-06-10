@@ -33,9 +33,10 @@ public class TicketMasterClient {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		String query = String.format("apikey=%s&latlong=%s,%s&keyword=%s&radius=%s", API_KEY, lat, lon, keyword, DEFAULT_RADIUS);
+		//String query = String.format("apikey=%s&latlong=%s,%s&keyword=%s&radius=%s", API_KEY, lat, lon, keyword, DEFAULT_RADIUS);
 		//请求里不能有空格
-		
+		String geoHash = GeoHash.encodeGeohash(lat, lon, 8);
+		String query = String.format("apikey=%s&geoPoint=%s&keyword=%s&radius=%s", API_KEY, geoHash, keyword, DEFAULT_RADIUS);
 		//assemble query
 		String url = HOST + PATH + "?" + query; //Java 中 static final 需要大写
 		StringBuilder responseBuilder = new StringBuilder();
