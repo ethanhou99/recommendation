@@ -182,5 +182,45 @@ public class MySQLConnection {
 
 	}
 
+	public String getFullname(String userId) {
+		if (conn == null) {
+                                           	System.err.println("DB connection failed");
+			return "";
+		}		
+		String name = "";
+		try {
+			String sql = "SELECT first_name, last_name FROM users WHERE user_id = ? ";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, userId);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				name = rs.getString("first_name") + " " + rs.getString("last_name");
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return name;
+	}
+
+	public boolean verifyLogin(String userId, String password) {
+		if (conn == null) {
+	                             System.err.println("DB connection failed");
+			return false;
+		}
+		try {
+			String sql = "SELECT user_id FROM users WHERE user_id = ? AND password = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userId);
+			stmt.setString(2, password);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return false;
+	}
+
 
 }
