@@ -38,7 +38,6 @@ public class RpcHelper {
 			while ((line = reader.readLine()) != null) {
 				sBuilder.append(line);
 			}
-			System.out.println(sBuilder.toString());
 			return new JSONObject(sBuilder.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
