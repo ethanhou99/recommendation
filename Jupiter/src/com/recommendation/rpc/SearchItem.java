@@ -2,6 +2,7 @@ package com.recommendation.rpc;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,9 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.recommendation.rpc.RpcHelper;
 
+import db.MySQLConnection;
 import entity.Item;
 import external.TicketMasterClient;
 
@@ -36,6 +40,7 @@ public class SearchItem extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		String userId = request.getParameter("user_id");
 		double lat = Double.parseDouble(request.getParameter("lat"));
 		double lon = Double.parseDouble(request.getParameter("lon"));
 		
@@ -43,8 +48,19 @@ public class SearchItem extends HttpServlet {
 		
 		List<Item> items = client.search(lat,  lon, null);
 		
+		MySQLConnection connection = new MySQLConnection();
+		Set<String> favoritedItemIds = connection.getFavoriteItemIds(userId);
+		connection.close();
+		
 		JSONArray array = new JSONArray();
 		for (Item item : items) {
+			JSONObject obj = item.toJSONObject();
+			try {
+				obj.put("favorite", favoritedItemIds.contains(item.getItemId()));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			array.put(obj);
 			array.put(item.toJSONObject());
 		}
 		
