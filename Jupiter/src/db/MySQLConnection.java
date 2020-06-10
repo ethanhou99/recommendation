@@ -97,6 +97,90 @@ public class MySQLConnection {
 			e.printStackTrace();
 		}
 	}
+	
+	public Set<String> getFavoriteItemIds(String userId) {
+		if (conn == null) {
+			System.err.println("DB connection failed");
+			return new HashSet<>();
+		}
+
+		Set<String> favoriteItems = new HashSet<>();
+
+		try {
+			String sql = "SELECT item_id FROM history WHERE user_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, userId);
+
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				String itemId = rs.getString("item_id");
+				favoriteItems.add(itemId);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return favoriteItems;
+	}
+
+	public Set<Item> getFavoriteItems(String userId) {
+		if (conn == null) {
+			return new HashSet<>();
+		}
+
+		Set<Item> favoriteItems = new HashSet<>();
+		Set<String> itemIds = getFavoriteItemIds(userId);
+
+		try {
+			String sql = "SELECT * FROM items WHERE item_id = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			for (String itemId : itemIds) {
+				stmt.setString(1, itemId);
+
+				ResultSet rs = stmt.executeQuery();
+
+				ItemBuilder builder = new ItemBuilder();
+				while (rs.next()) {
+					builder.setItemId(rs.getString("item_id"));
+					builder.setName(rs.getString("name"));
+					builder.setAddress(rs.getString("address"));
+					builder.setImageUrl(rs.getString("image_url"));
+					builder.setUrl(rs.getString("url"));
+					builder.setCategories(getCategories(itemId));
+					builder.setDistance(rs.getDouble("distance"));
+					builder.setRating(rs.getDouble("rating"));
+
+					favoriteItems.add(builder.build());
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return favoriteItems;
+	}
+
+	public Set<String> getCategories(String itemId) {
+		if (conn == null) {
+			return null;
+		}
+		Set<String> categories = new HashSet<>();
+		try {
+			String sql = "SELECT category from categories WHERE item_id = ? ";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, itemId);
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				String category = rs.getString("category");
+				categories.add(category);
+			}
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		return categories;
+
+	}
 
 
 }
