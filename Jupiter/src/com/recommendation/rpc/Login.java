@@ -59,19 +59,12 @@ public class Login extends HttpServlet {
 		MySQLConnection connection = new MySQLConnection();
 		try {
 			JSONObject input = RpcHelper.readJSONObject(request);
-			// allow access only if session exists
-			HttpSession session = request.getSession(false);
-			if (session == null) {
-				response.setStatus(403);
-				return;
-			}
-
-			// optional
-			String userId = session.getAttribute("user_id").toString(); 
+			String userId = input.getString("user_id");
 			String password = input.getString("password");
 			
 			JSONObject obj = new JSONObject();
 			if (connection.verifyLogin(userId, password)) {
+				HttpSession session = request.getSession();
 				session.setAttribute("user_id", userId);
 				session.setMaxInactiveInterval(600);
 				obj.put("status", "OK").put("user_id", userId).put("name", connection.getFullname(userId));
