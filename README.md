@@ -15,7 +15,7 @@
 <img src = "https://github.com/ethanhou99/recommendation/blob/master/Jupiter/WebContent/images/Demo3.png">
 
 - Get recommendations based on the liked events
-<img src = "https://github.com/ethanhou99/recommendation/blob/master/Jupiter/WebContent/images/Demo3.png">
+<img src = "https://github.com/ethanhou99/recommendation/blob/master/Jupiter/WebContent/images/Demo2.png">
 
 ## Try the app [here](http://34.211.21.63/Titan/#)
 - username: 1111
